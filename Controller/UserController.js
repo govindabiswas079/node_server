@@ -610,13 +610,13 @@ export const RegisterOtp = async (req, res, next) => {
 
     const options = {
         "method": "POST",
-        "hostname": "rapidprod-sendgrid-v1.p.rapidapi.com",
+        "hostname": process.env?.HOSTNAME,
         "port": null,
         "path": "/mail/send",
         "headers": {
             "content-type": "application/json",
-            "X-RapidAPI-Key": "b9a46f05bemsh0b149a05c8d9259p1927dfjsn046a20d73432",
-            "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+            "X-RapidAPI-Key": process.env?.XRapidAPIKey,
+            "X-RapidAPI-Host": process.env?.XRapidAPIHost,
             "useQueryString": true
         }
     };
