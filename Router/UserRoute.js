@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { DeleteProfile } from '../Controller/UserProfileContorller.js';
-import { VerifyUser, RegisterUser, LoginUser, GetUsers, GetUser, UpdateUser, DeleteUser, UpdatePassword, ForogotPassword, PasswordForgotOtp, PasswordForgotOtpVerify, CreateStatic, GetStatics, ReportStatic, ReportUpload } from '../Controller/UserController.js';
+import { VerifyUser, RegisterUser, LoginUser, GetUsers, GetUser, UpdateUser, DeleteUser, UpdatePassword, ForogotPassword, PasswordForgotOtp, PasswordForgotOtpVerify, CreateStatic, GetStatics, ReportStatic, ReportUpload, RegisterOtp, RegisterOtpVerify } from '../Controller/UserController.js';
 import { Authentication, localVariables } from '../Middleware/Authentication.js';
 
 const Router = express.Router({ automatic405: false });
@@ -10,6 +10,8 @@ var upload = multer({});
 
 Router.post('/user/verify', VerifyUser, (req, res) => res.end()).all(methodNotAllowed);
 Router.post('/user/registaer', RegisterUser, (req, res) => res.end()).all(methodNotAllowed);
+Router.get('/user/registaer/otp', localVariables, RegisterOtp, (req, res) => res.end()).all(methodNotAllowed);
+Router.put('/user/registaer/otp', RegisterOtpVerify, (req, res) => res.end()).all(methodNotAllowed);
 Router.post('/user/login', VerifyUser, LoginUser, CreateStatic, (req, res) => res.end()).all(methodNotAllowed);
 Router.get('/user/users', Authentication, GetUsers, (req, res) => res.end()).all(methodNotAllowed);
 Router.get('/user/users/:id', Authentication, GetUser, (req, res) => res.end()).all(methodNotAllowed);

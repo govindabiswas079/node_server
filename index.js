@@ -2,10 +2,7 @@ import path from 'path';
 import * as dotenv from 'dotenv'
 import express from 'express';
 import bodyParser from 'body-parser';
-import multer from 'multer';
 import cors from 'cors';
-import https from 'https';
-import fs from 'fs';
 import { Connection } from './Database/Connection.js';
 import UserRoute from './Router/UserRoute.js';
 import UserProfileRoute from './Router/UserProfileRoute.js';

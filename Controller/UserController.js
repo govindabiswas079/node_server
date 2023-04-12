@@ -10,6 +10,7 @@ import moment from 'moment';
 import Promise from 'promise';
 import fs from 'fs';
 import path from 'path';
+import http from 'https';
 
 const __dirname = path.resolve();
 export const VerifyUser = async (req, res, next) => {
@@ -601,5 +602,69 @@ export const ReportUpload = async (req, res, next) => {
         return res.status(200).send(jsonData[0]);
     } catch (error) {
 
+    }
+}
+
+export const RegisterOtp = async (req, res, next) => {
+    const { email } = req.body;
+
+    const options = {
+        "method": "POST",
+        "hostname": "rapidprod-sendgrid-v1.p.rapidapi.com",
+        "port": null,
+        "path": "/mail/send",
+        "headers": {
+            "content-type": "application/json",
+            "X-RapidAPI-Key": "b9a46f05bemsh0b149a05c8d9259p1927dfjsn046a20d73432",
+            "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+            "useQueryString": true
+        }
+    };
+
+    try {
+        if (!email) return res.status(404).send({ error: 'Email is required' });
+        req.app.locals.OTP = otpGenerator.generate(4, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })
+
+        const ReqOtp = http.request(options, function (res) {
+            const chunks = [];
+            res.on("data", function (chunk) {
+                chunks.push(chunk);
+            });
+            res.on("end", function () {
+                const body = Buffer.concat(chunks);
+                console.log(body.toString());
+            });
+        });
+
+        ReqOtp.write(JSON.stringify({
+            personalizations: [{ to: [{ email: email }], subject: 'ONE TIME PASSWORD' }],
+            from: { email: 'test@app.com' },
+            content: [{ type: 'text/plain', value: 'Your otp is' + " " + req.app.locals.OTP + " " + "OTP valid up to 5 min" }]
+        }));
+        ReqOtp.end();
+
+        setTimeout(() => {
+            req.app.locals.OTP = null;
+            req.app.locals.resetSession = true;
+        }, 300000)
+
+        return res.status(200).send({ message: "OTP Send to" + " " + email });
+    } catch (error) {
+        return res.status(404).send({ error });
+    }
+}
+
+export const RegisterOtpVerify = async (req, res, next) => {
+    const { code } = req?.body;
+
+    try {
+        if (parseInt(req.app.locals.OTP) === parseInt(code)) {
+            req.app.locals.OTP = null;
+            req.app.locals.resetSession = true;
+            return res.status(200).send({ msg: 'Verify successsfully!' })
+        }
+        return res.status(400).send({ error: "Invalid OTP" });
+    } catch (error) {
+        return res.status(400).send({ error });
     }
 }
